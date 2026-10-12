@@ -1,0 +1,5 @@
+# Sur GPU : installer PyTorch CUDA depuis https://pytorch.org AVANT cette ligne,
+# sinon pip peut poser un torch CPU et l'entraînement sera inutilisable.
+torch
+pymupdf
+customtkinter

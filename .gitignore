@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# Sources locales : ne pas republier les PDF
+data/*
+!data/README.md
+
+# Corpus extrait et poids : régénérés sur la machine d'entraînement
+processed/
+checkpoints/
+*.pt
+*.pth
+*.onnx
+
+# OS / éditeur
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
