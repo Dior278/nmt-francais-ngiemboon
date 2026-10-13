@@ -8,17 +8,16 @@
   <link rel="canonical" href="https://dior278.github.io/nmt-francais-ngiemboon/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@340;500;640&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Gentium+Plus:ital,wght@0,400;0,700;1,400;1,700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ink: #1a1814;
-      --forest: #16352b;
+      --ink: #1c1914;
+      --forest: #17352b;
       --forest-2: #0e241d;
-      --cream: #f4efe4;
+      --cream: #f3eee4;
       --paper: #fbf7f0;
       --laterite: #c4512c;
-      --gold: #a68445;
-      --muted: #5c564c;
+      --muted: #5e584e;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; }
@@ -28,26 +27,20 @@
       background:
         radial-gradient(1200px 500px at 10% -10%, #245744 0%, transparent 55%),
         var(--forest-2);
-      font-family: Outfit, sans-serif;
-      font-weight: 340;
+      font-family: "Gentium Plus", Palatino, "Palatino Linotype", serif;
+      font-size: 19px;
     }
-    .wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 28px 22px 64px;
-    }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 22px 72px; }
     .letters {
-      display: flex;
-      gap: 18px;
-      color: #f0e2c4;
-      letter-spacing: 0.08em;
-      font-size: 15px;
+      font-family: "Gentium Plus", Palatino, serif;
+      color: #f3e6c8;
+      letter-spacing: 0.22em;
+      font-size: 22px;
     }
     .panel {
-      margin-top: 22px;
+      margin-top: 18px;
       display: grid;
       grid-template-columns: 1.05fr 0.95fr;
-      min-height: 640px;
       background: var(--cream);
       border-radius: 28px;
       overflow: hidden;
@@ -55,104 +48,114 @@
     }
     .hero {
       background:
-        linear-gradient(165deg, rgba(255,255,255,0.05), transparent 40%),
+        linear-gradient(165deg, rgba(255,255,255,0.05), transparent 42%),
         var(--forest);
-      color: var(--paper);
+      color: #f7f1e6;
       padding: 48px 44px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      gap: 36px;
+    }
+    .kicker, .tag, .btn {
+      font-family: "Source Sans 3", sans-serif;
     }
     .kicker {
       color: #e7c98a;
       letter-spacing: 0.22em;
       text-transform: uppercase;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
     }
     h1 {
-      font-family: Fraunces, serif;
-      font-weight: 560;
+      font-family: "Gentium Plus", Palatino, serif;
+      font-weight: 700;
       font-size: clamp(64px, 8vw, 92px);
-      line-height: 0.9;
-      margin: 18px 0 12px;
-      letter-spacing: -0.03em;
-    }
-    .aka { color: #d9cbb4; font-size: 18px; margin: 0; }
-    .place {
-      margin-top: 28px;
-      font-size: 16px;
-      line-height: 1.5;
-      max-width: 26ch;
-      color: #efe6d6;
-    }
-    .hero a {
-      color: #f3d7a1;
-      text-underline-offset: 4px;
-    }
-    .tone {
-      color: #f6efe2;
-      font-size: 16px;
-      line-height: 1.45;
-      max-width: 28ch;
-    }
-    .body {
-      padding: 48px 44px;
-      background: var(--paper);
+      line-height: 0.92;
+      margin: 14px 0 8px;
     }
     h2 {
-      font-family: Fraunces, serif;
-      font-weight: 560;
-      font-size: 28px;
-      margin: 0 0 12px;
+      font-family: "Gentium Plus", Palatino, serif;
+      font-weight: 700;
+      font-size: 34px;
+      line-height: 1.15;
+      margin: 0 0 10px;
     }
-    p { line-height: 1.55; color: #2b2823; }
-    .lead { font-size: 17px; }
-    .cmd {
-      margin: 22px 0;
-      background: var(--ink);
-      color: #f6f1e6;
-      border-radius: 16px;
-      padding: 16px 18px;
-      font-family: ui-monospace, Consolas, monospace;
-      font-size: 13.5px;
-      line-height: 1.55;
-      overflow-x: auto;
-    }
+    .aka { color: #e6d8c2; font-size: 22px; margin: 0; }
+    .place { margin: 22px 0 0; max-width: 28ch; line-height: 1.45; color: #f3eadc; }
+    .tone { margin: 0; max-width: 30ch; line-height: 1.45; color: #f7f1e6; }
+    .body { padding: 48px 44px; background: var(--paper); }
+    p { line-height: 1.5; margin: 0 0 14px; }
     .tag {
-      display: inline-block;
-      margin-bottom: 8px;
       color: var(--laterite);
       font-size: 12px;
-      font-weight: 640;
+      font-weight: 600;
       letter-spacing: 0.14em;
       text-transform: uppercase;
     }
-    .note { color: var(--muted); font-size: 14px; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+    .word {
+      font-size: 28px;
+      margin: 8px 0 16px;
+    }
+    .warn {
+      background: #f3e4d4;
+      border-left: 4px solid var(--laterite);
+      padding: 12px 14px;
+      margin: 8px 0 18px;
+    }
+    .cmd {
+      margin: 0 0 16px;
+      background: var(--ink);
+      color: #f6f1e6;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 13.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+    }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
     .btn {
       display: inline-block;
       text-decoration: none;
       background: var(--laterite);
       color: white;
-      padding: 12px 16px;
+      padding: 11px 16px;
       border-radius: 999px;
-      font-weight: 500;
+      font-weight: 600;
+      font-size: 15px;
     }
     .btn.ghost {
       background: transparent;
       color: var(--forest);
       border: 1px solid #cfc4b0;
     }
+    .below {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .card {
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 22px;
+      padding: 28px 28px 24px;
+    }
+    .card h2 { font-size: 28px; }
+    .card ol { margin: 0; padding-left: 1.2em; }
+    .card li { margin: 0 0 8px; line-height: 1.4; }
+    a { color: #9a3d1e; }
+    .hero a { color: #f3d7a1; }
     @media (max-width: 860px) {
-      .panel { grid-template-columns: 1fr; }
-      .hero, .body { padding: 32px 24px; }
+      .panel, .below { grid-template-columns: 1fr; }
+      .hero, .body, .card { padding: 28px 22px; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="letters" aria-hidden="true">ŋ &nbsp; ɛ &nbsp; ɔ &nbsp; ʉ &nbsp; ẅ &nbsp; ÿ</div>
+    <div class="letters" aria-hidden="true">ŋ ɛ ɔ ʉ ẅ ÿ</div>
     <article class="panel">
       <header class="hero">
         <div>
@@ -164,17 +167,43 @@
         <p class="tone">Un ton change le sens. <em>má</em> veut dire « mère ». <em>mà</em> veut dire « boubou ».</p>
       </header>
       <section class="body">
-        <div class="tag">Français → ngiemboon</div>
-        <h2>Un Transformer pour continuer la recherche.</h2>
-        <p class="lead">Le dépôt entraîne un petit modèle de traduction à partir de textes parallèles, puis propose une commande simple. Ce n’est pas un produit fini : une sortie se relit avec un locuteur.</p>
+        <div class="tag">Le modèle, aujourd’hui</div>
+        <h2>Il ne traduit pas encore bien.</h2>
+        <div class="warn">
+          <p>Il manque des phrases d’entraînement. Huit mille paires, surtout bibliques, ne suffisent pas pour la langue de tous les jours.</p>
+          <p class="word">le pain → <em>mbrɛ̀</em></p>
+          <p>Le modèle actuel ne produit pas ce mot de façon fiable. Une sortie se relit avec un locuteur.</p>
+        </div>
+        <p>Cette page n’héberge pas le réseau : c’est une page statique, et le modèle est un programme Python. Pour traduire vraiment, on lance le dépôt sur une machine.</p>
         <div class="cmd">python -m nmt.translate --dir fr2ng "Bonsoir, comment ça va ?"</div>
-        <p class="note">L’autre sens existe aussi. On lui donne une vraie phrase ngiemboon, avec ses tons — pas un nom propre pris au hasard.</p>
         <div class="row">
           <a class="btn" href="https://github.com/Dior278/nmt-francais-ngiemboon">Voir le code</a>
           <a class="btn ghost" href="https://github.com/Dior278/nmt-francais-ngiemboon#traduire">Mode d’emploi</a>
         </div>
       </section>
     </article>
+    <section class="below">
+      <article class="card">
+        <div class="tag">Contribuer</div>
+        <h2>Le code est ouvert.</h2>
+        <p>Chacun peut lire le dépôt, le copier, et proposer une correction. Le plus utile, pour l’instant, ce sont des paires français / ngiemboon de la vie courante.</p>
+        <ol>
+          <li>Ouvrir le dépôt et lire le mode d’emploi.</li>
+          <li>Ajouter une phrase, une ligne JSON : le français, le ngiemboon, les tons.</li>
+          <li>Ou écrire ce qui cloche, via une issue.</li>
+        </ol>
+        <div class="row">
+          <a class="btn" href="https://github.com/Dior278/nmt-francais-ngiemboon">Accéder au code</a>
+          <a class="btn ghost" href="https://github.com/Dior278/nmt-francais-ngiemboon/issues/new">Signaler quelque chose</a>
+        </div>
+      </article>
+      <article class="card">
+        <div class="tag">Pourquoi pas ici</div>
+        <h2>Traduire dans le navigateur.</h2>
+        <p>C’est possible plus tard : il faudrait exporter les poids du réseau et les faire calculer dans la page. Ils pèsent une quinzaine de mégaoctets.</p>
+        <p>Tant que le modèle confond encore des mots simples, le mettre en ligne ferait croire à une traduction. Le bon geste, maintenant, c’est d’ajouter des données, puis de réentraîner.</p>
+      </article>
+    </section>
   </div>
 </body>
 </html>
