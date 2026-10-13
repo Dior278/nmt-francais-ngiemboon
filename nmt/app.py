@@ -45,7 +45,7 @@ TONE_MARKS = [
 FALLBACK_EXAMPLES = [
     ("fr2ng", "Bonsoir, comment ça va ?", ""),
     ("fr2ng", "Le cancer du col de l’utérus.", ""),
-    ("ng2fr", "Yěsô Kristo", ""),
+    ("ng2fr", "má", "ton haut : mère"),
     ("ng2fr", "má", "avec le ton haut : mère"),
 ]
 

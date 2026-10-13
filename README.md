@@ -66,7 +66,12 @@ En ligne de commande :
 
 ```powershell
 python -m nmt.translate --dir fr2ng "Bonsoir, comment ça va ?"
-python -m nmt.translate --dir ng2fr "Yěsô Kristo"
+```
+
+Sens inverse. `má`, avec le ton haut, veut dire « mère ». Ce n’est pas la traduction de la phrase du dessus.
+
+```powershell
+python -m nmt.translate --dir ng2fr "má"
 ```
 
 Sans tons à l’entrée ngiemboon, le programme normalise et prévient : l’ambiguïté reste.

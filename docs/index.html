@@ -2,15 +2,173 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Traduction français–ngiemboon (guembon, ngienboum) — Batcham</title>
-  <meta name="description" content="Traduction automatique français-ngiemboon (aussi guembon, ngienboum), langue bamiléké des Grassfields parlée à Batcham, Bamboutos, Ouest Cameroun.">
-  <link rel="canonical" href="https://github.com/Dior278/nmt-francais-ngiemboon">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ngiemboon — traduction depuis le français · Batcham</title>
+  <meta name="description" content="Traduction automatique du français vers le ngiemboon (guembon, ngienboum), langue bamiléké des Grassfields parlée à Batcham, dans les Bamboutos, à l’ouest du Cameroun.">
+  <link rel="canonical" href="https://dior278.github.io/nmt-francais-ngiemboon/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@340;500;640&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a1814;
+      --forest: #16352b;
+      --forest-2: #0e241d;
+      --cream: #f4efe4;
+      --paper: #fbf7f0;
+      --laterite: #c4512c;
+      --gold: #a68445;
+      --muted: #5c564c;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 10% -10%, #245744 0%, transparent 55%),
+        var(--forest-2);
+      font-family: Outfit, sans-serif;
+      font-weight: 340;
+    }
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 28px 22px 64px;
+    }
+    .letters {
+      display: flex;
+      gap: 14px;
+      color: #d7c7a1;
+      letter-spacing: 0.18em;
+      font-size: 13px;
+    }
+    .panel {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      min-height: 640px;
+      background: var(--cream);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+    }
+    .hero {
+      background:
+        linear-gradient(165deg, rgba(255,255,255,0.05), transparent 40%),
+        var(--forest);
+      color: var(--paper);
+      padding: 48px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .kicker {
+      color: #e7c98a;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    h1 {
+      font-family: Fraunces, serif;
+      font-weight: 560;
+      font-size: clamp(64px, 8vw, 92px);
+      line-height: 0.9;
+      margin: 18px 0 12px;
+      letter-spacing: -0.03em;
+    }
+    .aka { color: #d9cbb4; font-size: 18px; margin: 0; }
+    .place {
+      margin-top: 28px;
+      font-size: 16px;
+      line-height: 1.5;
+      max-width: 26ch;
+      color: #efe6d6;
+    }
+    .hero a {
+      color: #f3d7a1;
+      text-underline-offset: 4px;
+    }
+    .body {
+      padding: 48px 44px;
+      background: var(--paper);
+    }
+    h2 {
+      font-family: Fraunces, serif;
+      font-weight: 560;
+      font-size: 28px;
+      margin: 0 0 12px;
+    }
+    p { line-height: 1.55; color: #2b2823; }
+    .lead { font-size: 17px; }
+    .cmd {
+      margin: 22px 0;
+      background: var(--ink);
+      color: #f6f1e6;
+      border-radius: 16px;
+      padding: 16px 18px;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 13.5px;
+      line-height: 1.55;
+      overflow-x: auto;
+    }
+    .tag {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: var(--laterite);
+      font-size: 12px;
+      font-weight: 640;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .note { color: var(--muted); font-size: 14px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      background: var(--laterite);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+    .btn.ghost {
+      background: transparent;
+      color: var(--forest);
+      border: 1px solid #cfc4b0;
+    }
+    @media (max-width: 860px) {
+      .panel { grid-template-columns: 1fr; }
+      .hero, .body { padding: 32px 24px; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Traduction français ↔ ngiemboon</h1>
-  <p>Le ngiemboon (guembon, ngienboum) est une langue bamiléké des Grassfields, parlée à Batcham, dans les Bamboutos, à l’ouest du Cameroun.</p>
-  <p>Ce dépôt contient un Transformer pour la traduction français–ngiemboon, à reprendre pour la recherche et la préservation de la langue.</p>
-  <p><a href="https://github.com/Dior278/nmt-francais-ngiemboon">Code et mode d’emploi sur GitHub</a></p>
-  <p lang="en">French–Ngiemboon neural machine translation. Ngiemboon is a Grassfields language spoken in Batcham, Cameroon.</p>
+  <div class="wrap">
+    <div class="letters" aria-hidden="true">ŋ &nbsp; ɛ &nbsp; ɔ &nbsp; ʉ &nbsp; ẅ &nbsp; ÿ</div>
+    <article class="panel">
+      <header class="hero">
+        <div>
+          <div class="kicker">Grassfields · Bamiléké</div>
+          <h1>Ngiemboon</h1>
+          <p class="aka">guembon · ngienboum</p>
+          <p class="place">Parlée à Batcham, dans les Bamboutos, à l’ouest du Cameroun. Écrite dans l’alphabet général des langues camerounaises.</p>
+        </div>
+        <p>Un ton change le sens. <em>má</em> veut dire « mère ». <em>mà</em> veut dire « boubou ».</p>
+      </header>
+      <section class="body">
+        <div class="tag">Français → ngiemboon</div>
+        <h2>Un Transformer pour continuer la recherche.</h2>
+        <p class="lead">Le dépôt entraîne un petit modèle de traduction à partir de textes parallèles, puis propose une commande simple. Ce n’est pas un produit fini : une sortie se relit avec un locuteur.</p>
+        <div class="cmd">python -m nmt.translate --dir fr2ng "Bonsoir, comment ça va ?"</div>
+        <p class="note">L’autre sens existe aussi. On lui donne une vraie phrase ngiemboon, avec ses tons — pas un nom propre pris au hasard.</p>
+        <div class="row">
+          <a class="btn" href="https://github.com/Dior278/nmt-francais-ngiemboon">Voir le code</a>
+          <a class="btn ghost" href="https://github.com/Dior278/nmt-francais-ngiemboon#traduire">Mode d’emploi</a>
+        </div>
+      </section>
+    </article>
+  </div>
 </body>
 </html>
