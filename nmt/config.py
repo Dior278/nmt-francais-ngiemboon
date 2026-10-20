@@ -77,7 +77,9 @@ def profile_for(device: torch.device) -> dict:
 
 
 def parse_train_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Train the French ↔ Ngiemboon Transformer.")
+    p = argparse.ArgumentParser(
+        description="Train the French ↔ Ngiemboon Transformer. English is translated later, through French."
+    )
     p.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     p.add_argument("--epochs", type=int, default=None)
     p.add_argument("--batch-size", type=int, default=None)

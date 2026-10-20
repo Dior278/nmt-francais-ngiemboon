@@ -1,4 +1,5 @@
-"""Français ↔ ngiemboon (guembon), parlée à Batcham (Bamboutos, Ouest Cameroun).
+"""French and English ↔ Ngiemboon (guembon), spoken in Batcham (Bamboutos, West Cameroon).
 
-Construire le corpus, entraîner sur GPU, puis traduire via le CLI ou l’UI.
+Build the corpus, train, then translate from the command line or the window.
+English goes through French. Traduction français, anglais et ngiemboon.
 """

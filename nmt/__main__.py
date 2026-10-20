@@ -1,8 +1,10 @@
-"""Commande unique.
+"""One command.
 
-    python -m nmt                         boucle français → ngiemboon
+    python -m nmt                         French → Ngiemboon, then a prompt
     python -m nmt "Bonsoir, comment ça va ?"
-    python -m nmt --vers fr "má"
+    python -m nmt --from en "Good evening"
+    python -m nmt --to fr "má"
+    python -m nmt --to en "má"
     python -m nmt train
     python -m nmt app
 """
@@ -12,8 +14,24 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .decode import prepare_source, tone_notes, translate_pair
+from .pivot import PivotError, resolve_direction, translate_between
 from .train import load_model
+
+_LABELS = {
+    "fr2ng": "French → Ngiemboon",
+    "en2ng": "English → Ngiemboon",
+    "ng2fr": "Ngiemboon → French",
+    "ng2en": "Ngiemboon → English",
+}
+_COMMANDS = {
+    "/fr-ng": "fr2ng",
+    "/en-ng": "en2ng",
+    "/ng-fr": "ng2fr",
+    "/ng-en": "ng2en",
+    "/ng": "fr2ng",
+    "/fr": "ng2fr",
+    "/en": "ng2en",
+}
 
 
 def _configure_stdio() -> None:
@@ -26,17 +44,19 @@ def _configure_stdio() -> None:
 
 def _translate_once(text: str, direction: str, bundle) -> str:
     model, tokenizer, device = bundle
-    prepared, tone_missing = prepare_source(text, direction)
-    result = translate_pair(model, tokenizer, prepared, direction, device)
-    for note in tone_notes(direction, tone_missing, result):
-        print("Note : " + note, file=sys.stderr)
+    try:
+        result, notes = translate_between(model, tokenizer, text, direction, device)
+    except PivotError as exc:
+        raise SystemExit(str(exc)) from exc
+    for note in notes:
+        print("Note: " + note, file=sys.stderr)
     return result
 
 
 def _interactive(direction: str, bundle) -> None:
-    print("français ↔ ngiemboon    Batcham · Bamboutos")
-    print("Entrée pour traduire.   /fr ou /ng pour changer de sens.   /q pour quitter.")
-    print(f"sens : {'français → ngiemboon' if direction == 'fr2ng' else 'ngiemboon → français'}")
+    print("French, English ↔ Ngiemboon    Batcham, Bamboutos")
+    print("Enter translates.   /fr-ng  /en-ng  /ng-fr  /ng-en   /q quits.")
+    print("direction:", _LABELS[direction])
     while True:
         try:
             text = input("\n> ").strip()
@@ -47,13 +67,9 @@ def _interactive(direction: str, bundle) -> None:
             continue
         if text in {"/q", "/quit", "quit", "exit"}:
             return
-        if text == "/fr":
-            direction = "ng2fr"
-            print("sens : ngiemboon → français")
-            continue
-        if text == "/ng":
-            direction = "fr2ng"
-            print("sens : français → ngiemboon")
+        if text in _COMMANDS:
+            direction = _COMMANDS[text]
+            print("direction:", _LABELS[direction])
             continue
         print(_translate_once(text, direction, bundle))
 
@@ -61,17 +77,36 @@ def _interactive(direction: str, bundle) -> None:
 def _translate_cli(argv: list[str]) -> None:
     parser = argparse.ArgumentParser(
         prog="python -m nmt",
-        description="Traduire entre le français et le ngiemboon.",
+        description=(
+            "Translate between Ngiemboon and French or English. "
+            "Traduction ngiemboon, français ou anglais. "
+            "English goes through French."
+        ),
     )
-    parser.add_argument("text", nargs="*", help="Phrase à traduire. Sans phrase : mode interactif.")
+    parser.add_argument("text", nargs="*", help="Sentence to translate. With no sentence, prompt.")
+    parser.add_argument(
+        "--from",
+        dest="source",
+        choices=["fr", "en", "ng"],
+        help="Source language. Default: fr, or ng when the target is fr or en.",
+    )
+    parser.add_argument(
+        "--to",
+        dest="target",
+        choices=["ng", "fr", "en"],
+        help="Target language. Default: ng, or fr when the source is ng.",
+    )
     parser.add_argument(
         "--vers",
-        choices=["ng", "fr"],
-        default="ng",
-        help="Langue d'arrivée. ng = français → ngiemboon (défaut), fr = l'inverse.",
+        choices=["ng", "fr", "en"],
+        help="Same as --to. Older commands used --vers fr.",
     )
     args = parser.parse_args(argv)
-    direction = "fr2ng" if args.vers == "ng" else "ng2fr"
+    target = args.target or args.vers
+    try:
+        direction = resolve_direction(args.source, target)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
     bundle = load_model()
     text = " ".join(args.text).strip()
     if not text:

@@ -21,24 +21,35 @@ def prepare_source(text: str, direction: str) -> tuple[str, bool]:
     return normalize_fr(text), False
 
 
+_TONE = {
+    "en": {
+        "missing": 'No tone on the Ngiemboon input. The suggested meaning is a guess (má “mother” ≠ mà “robe”).',
+        "keyboard": " Use the AGLC keyboard.",
+        "bare": 'Ngiemboon output has no AGLC tone. The meaning can change (má “mother” ≠ mà “robe”).',
+    },
+    "fr": {
+        "missing": "Aucun ton en entrée : le sens proposé est une approximation (má « mère » ≠ mà « boubou »).",
+        "keyboard": " Utilisez le clavier AGLC.",
+        "bare": "Sortie sans ton AGLC : le sens peut changer (má « mère » ≠ mà « boubou »).",
+    },
+}
+
+
 def tone_notes(
     direction: str,
     source_missing: bool,
     output: str,
     *,
     keyboard: bool = False,
+    lang: str = "en",
 ) -> list[str]:
+    pack = _TONE["fr" if lang == "fr" else "en"]
     notes: list[str] = []
     if direction == "ng2fr" and source_missing:
-        extra = " Utilisez le clavier AGLC." if keyboard else ""
-        notes.append(
-            "Aucun ton en entrée : le français proposé est une approximation "
-            "(má « mère » ≠ mà « boubou »)." + extra
-        )
+        extra = pack["keyboard"] if keyboard else ""
+        notes.append(pack["missing"] + extra)
     if direction == "fr2ng" and output and not has_tone_marks(output):
-        notes.append(
-            "Sortie sans ton AGLC : le sens peut changer (má « mère » ≠ mà « boubou »)."
-        )
+        notes.append(pack["bare"])
     return notes
 
 
@@ -63,7 +74,7 @@ def _source_tensor(model, tokenizer, text, target_lang, device, domain, warn: bo
     if len(ids) > limit:
         if warn:
             print(
-                "Note : la phrase dépasse la longueur du modèle, la fin est ignorée.",
+                "Note: the sentence is past the model length, so the end is dropped.",
                 file=sys.stderr,
             )
         ids = ids[:limit]
@@ -162,11 +173,12 @@ def translate_pair(
     device: torch.device,
     domain: str | None = None,
     beam_size: int = 4,
+    warn: bool = True,
 ) -> str:
     if direction not in {"fr2ng", "ng2fr"}:
         raise ValueError("direction must be 'fr2ng' or 'ng2fr'")
     text, _ = prepare_source(text, direction)
     target = "ng" if direction == "fr2ng" else "fr"
     return beam_translate(
-        model, tokenizer, text, target, device, beam_size=beam_size, domain=domain
+        model, tokenizer, text, target, device, beam_size=beam_size, domain=domain, warn=warn
     )

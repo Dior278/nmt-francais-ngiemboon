@@ -49,8 +49,8 @@ def prepare(
         tokenizer = BPETokenizer.load(tok_path)
         if not _tokenizer_matches_profile(tokenizer, vocab_size, require_domain_tags):
             _log(
-                f"tokenizer.json incomplet "
-                f"(vocab={tokenizer.vocab_size}, tons AGLC ou domaine) — BPE recréé"
+                f"tokenizer.json is incomplete "
+                f"(vocab={tokenizer.vocab_size}, AGLC tones or domain) — BPE rebuilt"
             )
             tokenizer = None
     for row in pairs:
@@ -145,10 +145,10 @@ def _load_resume(resume_path, ckpt, cfg, tokenizer, device, log):
         try:
             payload = torch.load(path, map_location=device, weights_only=False)
         except Exception as exc:
-            log(f"{path.name} illisible ({exc}) — ignoré")
+            log(f"{path.name} unreadable ({exc}) — skipped")
             continue
         if not _checkpoint_matches(payload, cfg, tokenizer.vocab_size, tokenizer.pad_id):
-            log(f"{path.name} a une autre taille — ignoré")
+            log(f"{path.name} has a different size — skipped")
             continue
         return path, payload
     return None, None
@@ -156,23 +156,23 @@ def _load_resume(resume_path, ckpt, cfg, tokenizer, device, log):
 
 def _restore_optim(payload, optimizer, scheduler, scaler, log) -> None:
     if "optimizer" not in payload:
-        log("pas d'état d'optimiseur : le pas d'apprentissage repart au début.")
+        log("no optimizer state: the learning rate starts over.")
         return
     try:
         optimizer.load_state_dict(payload["optimizer"])
     except Exception as exc:
-        log(f"optimiseur non repris ({exc})")
+        log(f"optimizer not restored ({exc})")
         return
     if "scheduler" in payload:
         try:
             scheduler.load_state_dict(payload["scheduler"])
         except Exception as exc:
-            log(f"ordonnance de pas non reprise ({exc})")
+            log(f"learning-rate schedule not restored ({exc})")
     if scaler.is_enabled() and payload.get("scaler"):
         try:
             scaler.load_state_dict(payload["scaler"])
         except Exception as exc:
-            log(f"scaler non repris ({exc})")
+            log(f"scaler not restored ({exc})")
 
 
 def run_epoch(
@@ -218,7 +218,7 @@ def run_epoch(
             total += float(loss.item()) * tokens
             ntok += tokens
             if train and log is not None and step % 100 == 0:
-                log(f"  lot {step}  loss {loss.item():.3f}")
+                log(f"  batch {step}  loss {loss.item():.3f}")
     return total / max(ntok, 1)
 
 
@@ -242,7 +242,7 @@ def train(
     if device.type == "cuda":
         log(f"gpu={torch.cuda.get_device_name(0)}")
     else:
-        log("Profil CPU : 3 couches, d_model=192, assez petit pour ~8 000 paires.")
+        log("CPU profile: 3 layers, d_model=192, small enough for about 8,000 pairs.")
     log(
         f"profile: layers={cfg['num_layers']} d_model={cfg['d_model']} "
         f"batch={cfg['batch_size']} epochs={cfg['epochs']} amp={cfg['amp']} "
@@ -284,9 +284,9 @@ def train(
         pad_id=tokenizer.pad_id,
     ).to(device)
     n_params = sum(p.numel() for p in model.parameters())
-    log(f"paramètres={n_params / 1e6:.2f} M")
+    log(f"parameters={n_params / 1e6:.2f} M")
     if len(train_ds) == 0:
-        raise RuntimeError("Aucune phrase d'entraînement (corpus vide ou phrases trop longues).")
+        raise RuntimeError("No training sentences (empty corpus or sentences that are too long).")
 
     CHECKPOINTS.mkdir(parents=True, exist_ok=True)
     ckpt = CHECKPOINTS / "fr_ngiemboon.pt"
@@ -328,7 +328,7 @@ def train(
             try:
                 model.load_state_dict(payload["model"])
             except RuntimeError as exc:
-                log(f"poids incompatibles ({exc}) — entraînement depuis zéro")
+                log(f"incompatible weights ({exc}) — training from scratch")
                 payload = None
         if payload is not None:
             _restore_optim(payload, optimizer, scheduler, scaler, log)
@@ -339,9 +339,9 @@ def train(
                 best_val = float(payload["best_val"])
             else:
                 best_val = _validation_loss(model, val_ds, criterion, device, cfg, tokenizer)
-                log(f"validation du modèle repris : {best_val:.4f}")
+                log(f"validation of the restored model: {best_val:.4f}")
             log(
-                f"reprise depuis {origin.name} à l'epoch {start_epoch}  "
+                f"resumed from {origin.name} at epoch {start_epoch}  "
                 f"best_val {best_val:.4f}  lr {optimizer.param_groups[0]['lr']:.2e}"
             )
 
@@ -372,8 +372,8 @@ def train(
     try:
         if start_epoch > cfg["epochs"]:
             log(
-                f"déjà entraîné jusqu'à l'epoch {start_epoch - 1} "
-                f"(maximum {cfg['epochs']}). Relancez avec --epochs plus grand pour continuer."
+                f"already trained through epoch {start_epoch - 1} "
+                f"(maximum {cfg['epochs']}). Run again with a higher --epochs to continue."
             )
         for epoch in range(start_epoch, cfg["epochs"] + 1):
             started = time.perf_counter()
@@ -413,16 +413,16 @@ def train(
                 best_val = val_loss
                 stale = 0
                 _atomic_save(_snapshot(epoch, include_optim=False), ckpt)
-                log(f"  meilleur modèle → {ckpt}")
+                log(f"  best model → {ckpt}")
             else:
                 stale += 1
             _atomic_save(_snapshot(epoch, include_optim=True), resume_path)
             _write_history()
             if patience and stale >= patience:
-                log(f"validation stable depuis {patience} epochs — arrêt.")
+                log(f"validation unchanged for {patience} epochs — stopping.")
                 break
     except KeyboardInterrupt:
-        log("interrompu — le meilleur checkpoint déjà écrit est conservé.")
+        log("interrupted — the best checkpoint already written is kept.")
     finally:
         _write_history()
     return model, tokenizer, history
@@ -434,7 +434,7 @@ def load_model(device_name: str = "auto"):
     tok_path = PROCESSED_DIR / "tokenizer.json"
     if not ckpt_path.exists() or not tok_path.exists():
         raise FileNotFoundError(
-            "Pas de modèle. Lancez : python -m nmt train"
+            "No model yet. Run: python -m nmt train"
         )
     tokenizer = BPETokenizer.load(tok_path)
     payload = torch.load(ckpt_path, map_location=device, weights_only=False)

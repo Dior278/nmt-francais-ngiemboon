@@ -273,7 +273,60 @@ class DecodeTests(unittest.TestCase):
                 model, tokenizer, "mot " * 80, "ng", torch.device("cpu"), max_len=4
             )
         self.assertIsInstance(text, str)
-        self.assertIn("longueur", note.getvalue())
+        self.assertIn("length", note.getvalue())
+
+
+class EnglishRouteTests(unittest.TestCase):
+    def _bundle(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            tokenizer = train_bpe(["bonjour ẅɛ", "má mère"], vocab_size=60, min_freq=1)
+        model = Seq2SeqTransformer(
+            vocab_size=tokenizer.vocab_size,
+            d_model=32,
+            num_heads=4,
+            num_layers=1,
+            d_ff=64,
+            dropout=0.0,
+            max_len=32,
+            pad_id=tokenizer.pad_id,
+        ).eval()
+        return model, tokenizer, torch.device("cpu")
+
+    def test_direction_pairs(self) -> None:
+        from nmt.pivot import resolve_direction
+
+        self.assertEqual(resolve_direction(None, None), "fr2ng")
+        self.assertEqual(resolve_direction("en", None), "en2ng")
+        self.assertEqual(resolve_direction(None, "fr"), "ng2fr")
+        self.assertEqual(resolve_direction(None, "en"), "ng2en")
+        self.assertEqual(resolve_direction("ng", "en"), "ng2en")
+        with self.assertRaises(ValueError):
+            resolve_direction("fr", "en")
+
+    def test_english_goes_through_french(self) -> None:
+        from nmt.pivot import translate_between
+
+        model, tokenizer, device = self._bundle()
+        calls = []
+
+        def fake_pivot(text, direction):
+            calls.append((text, direction))
+            return "Bonsoir" if direction == "en2fr" else "Good evening"
+
+        result, notes = translate_between(
+            model, tokenizer, "Good evening", "en2ng", device, pivot_fn=fake_pivot, beam_size=1
+        )
+        self.assertIsInstance(result, str)
+        self.assertEqual(calls, [("Good evening", "en2fr")])
+        self.assertTrue(any("French" in note for note in notes))
+
+        calls.clear()
+        result, notes = translate_between(
+            model, tokenizer, "má", "ng2en", device, pivot_fn=fake_pivot, beam_size=1
+        )
+        self.assertEqual(result, "Good evening")
+        self.assertEqual(calls[0][1], "fr2en")
+        self.assertTrue(any("French" in note for note in notes))
 
 
 if __name__ == "__main__":

@@ -123,12 +123,12 @@ if __name__ == "__main__":
     except Exception:
         pass
 
-    parser = argparse.ArgumentParser(description="Extraire le corpus FR ↔ ngiemboon (pas d'entraînement).")
-    parser.add_argument("--force", action="store_true", help="Relire les PDF (Bible + extras).")
+    parser = argparse.ArgumentParser(description="Extract the French ↔ Ngiemboon corpus (no training).")
+    parser.add_argument("--force", action="store_true", help="Read the PDFs again (Bible + extras).")
     parser.add_argument(
         "--include-adapted-ortho",
         action="store_true",
-        help="Inclure Ndiola 2011 (book=NDIOLA). Désactivé par défaut.",
+        help="Include Ndiola 2011 (book=NDIOLA). Off by default.",
     )
     args = parser.parse_args()
     data = build_all(force=args.force, include_adapted_ortho=args.include_adapted_ortho)

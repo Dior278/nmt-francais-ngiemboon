@@ -1,209 +1,66 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ngiemboon — traduction depuis le français · Batcham</title>
-  <meta name="description" content="Traduction automatique du français vers le ngiemboon (guembon, ngienboum), langue bamiléké des Grassfields parlée à Batcham, dans les Bamboutos, à l’ouest du Cameroun.">
-  <link rel="canonical" href="https://dior278.github.io/nmt-francais-ngiemboon-2/">
+  <title>Ngiemboon — French and English translation</title>
+  <meta name="description" content="French–Ngiemboon and English–Ngiemboon translation. Traduction français–ngiemboon et anglais–ngiemboon, langue de Batcham (Bamboutos, Cameroun). Also called guembon, ngienboum.">
+  <link rel="canonical" href="https://dior278.github.io/nmt-francais-ngiemboon/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Gentium+Plus:ital,wght@0,400;0,700;1,400;1,700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Gentium+Plus:ital,wght@0,400;0,700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --ink: #1c1914;
-      --forest: #17352b;
-      --forest-2: #0e241d;
-      --cream: #f3eee4;
-      --paper: #fbf7f0;
-      --laterite: #c4512c;
-      --muted: #5e584e;
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; }
     body {
-      min-height: 100vh;
-      color: var(--ink);
-      background:
-        radial-gradient(1200px 500px at 10% -10%, #245744 0%, transparent 55%),
-        var(--forest-2);
-      font-family: "Gentium Plus", Palatino, "Palatino Linotype", serif;
-      font-size: 19px;
-    }
-    .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 22px 72px; }
-    .letters {
-      font-family: "Gentium Plus", Palatino, serif;
-      color: #f3e6c8;
-      letter-spacing: 0.22em;
-      font-size: 22px;
-    }
-    .panel {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      background: var(--cream);
-      border-radius: 28px;
-      overflow: hidden;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
-    }
-    .hero {
-      background:
-        linear-gradient(165deg, rgba(255,255,255,0.05), transparent 42%),
-        var(--forest);
-      color: #f7f1e6;
-      padding: 48px 44px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 36px;
-    }
-    .kicker, .tag, .btn {
+      max-width: 40rem;
+      margin: 2.5rem auto;
+      padding: 0 1.1rem 3rem;
+      color: #1c1914;
+      background: #fff;
       font-family: "Source Sans 3", sans-serif;
-    }
-    .kicker {
-      color: #e7c98a;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    h1 {
-      font-family: "Gentium Plus", Palatino, serif;
-      font-weight: 700;
-      font-size: clamp(64px, 8vw, 92px);
-      line-height: 0.92;
-      margin: 14px 0 8px;
-    }
-    h2 {
-      font-family: "Gentium Plus", Palatino, serif;
-      font-weight: 700;
-      font-size: 34px;
-      line-height: 1.15;
-      margin: 0 0 10px;
-    }
-    .aka { color: #e6d8c2; font-size: 22px; margin: 0; }
-    .place { margin: 22px 0 0; max-width: 28ch; line-height: 1.45; color: #f3eadc; }
-    .tone { margin: 0; max-width: 30ch; line-height: 1.45; color: #f7f1e6; }
-    .body { padding: 48px 44px; background: var(--paper); }
-    p { line-height: 1.5; margin: 0 0 14px; }
-    .tag {
-      color: var(--laterite);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-    .word {
-      font-size: 28px;
-      margin: 8px 0 16px;
-    }
-    .warn {
-      background: #f3e4d4;
-      border-left: 4px solid var(--laterite);
-      padding: 12px 14px;
-      margin: 8px 0 18px;
-    }
-    .cmd {
-      margin: 0 0 16px;
-      background: var(--ink);
-      color: #f6f1e6;
-      border-radius: 16px;
-      padding: 14px 16px;
-      font-family: ui-monospace, Consolas, monospace;
-      font-size: 13.5px;
+      font-size: 1.05rem;
       line-height: 1.5;
+    }
+    h1, h2, .ng { font-family: "Gentium Plus", Palatino, serif; }
+    h1 { font-size: 2.6rem; line-height: 1; margin: 0.2rem 0; }
+    h2 { font-size: 1.45rem; margin: 1.6rem 0 0.4rem; }
+    p { margin: 0.55rem 0; }
+    .aka { margin: 0; color: #444; }
+    pre {
+      background: #f4f1ea;
+      padding: 0.8rem 1rem;
       overflow-x: auto;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.92rem;
+      line-height: 1.45;
     }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
-    .btn {
-      display: inline-block;
-      text-decoration: none;
-      background: var(--laterite);
-      color: white;
-      padding: 11px 16px;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 15px;
-    }
-    .btn.ghost {
-      background: transparent;
-      color: var(--forest);
-      border: 1px solid #cfc4b0;
-    }
-    .below {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-    .card {
-      background: var(--paper);
-      color: var(--ink);
-      border-radius: 22px;
-      padding: 28px 28px 24px;
-    }
-    .card h2 { font-size: 28px; }
-    .card ol { margin: 0; padding-left: 1.2em; }
-    .card li { margin: 0 0 8px; line-height: 1.4; }
-    a { color: #9a3d1e; }
-    .hero a { color: #f3d7a1; }
-    @media (max-width: 860px) {
-      .panel, .below { grid-template-columns: 1fr; }
-      .hero, .body, .card { padding: 28px 22px; }
-    }
+    a { color: #0b3d2e; }
+    hr { border: 0; border-top: 1px solid #ddd; margin: 2rem 0 0.4rem; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="letters" aria-hidden="true">ŋ ɛ ɔ ʉ ẅ ÿ</div>
-    <article class="panel">
-      <header class="hero">
-        <div>
-          <div class="kicker">Grassfields · Bamiléké</div>
-          <h1>Ngiemboon</h1>
-          <p class="aka">guembon · ngienboum</p>
-          <p class="place">Parlée à Batcham, dans les Bamboutos, à l’ouest du Cameroun. Écrite dans l’alphabet général des langues camerounaises.</p>
-        </div>
-        <p class="tone">Un ton change le sens. <em>má</em> veut dire « mère ». <em>mà</em> veut dire « boubou ».</p>
-      </header>
-      <section class="body">
-        <div class="tag">Le modèle, aujourd’hui</div>
-        <h2>Il ne traduit pas encore bien.</h2>
-        <div class="warn">
-          <p>Il manque des phrases d’entraînement. Huit mille paires, surtout bibliques, ne suffisent pas pour la langue de tous les jours.</p>
-          <p class="word">le pain → <em>mbrɛ̀</em></p>
-          <p>Le modèle actuel ne produit pas ce mot de façon fiable. Une sortie se relit avec un locuteur.</p>
-        </div>
-        <p>Cette page n’héberge pas le réseau : c’est une page statique, et le modèle est un programme Python. Pour traduire vraiment, on lance le dépôt sur une machine.</p>
-        <div class="cmd">python -m nmt.translate --dir fr2ng "Bonsoir, comment ça va ?"</div>
-        <div class="row">
-          <a class="btn" href="https://github.com/Dior278/nmt-francais-ngiemboon-2">Voir le code</a>
-          <a class="btn ghost" href="https://github.com/Dior278/nmt-francais-ngiemboon-2#traduire">Mode d’emploi</a>
-        </div>
-      </section>
-    </article>
-    <section class="below">
-      <article class="card">
-        <div class="tag">Contribuer</div>
-        <h2>Le code est ouvert.</h2>
-        <p>Chacun peut lire le dépôt, le copier, et proposer une correction. Le plus utile, pour l’instant, ce sont des paires français / ngiemboon de la vie courante.</p>
-        <ol>
-          <li>Ouvrir le dépôt et lire le mode d’emploi.</li>
-          <li>Ajouter une phrase, une ligne JSON : le français, le ngiemboon, les tons.</li>
-          <li>Ou écrire ce qui cloche, via une issue.</li>
-        </ol>
-        <div class="row">
-          <a class="btn" href="https://github.com/Dior278/nmt-francais-ngiemboon-2">Accéder au code</a>
-          <a class="btn ghost" href="https://github.com/Dior278/nmt-francais-ngiemboon-2/issues/new">Signaler quelque chose</a>
-        </div>
-      </article>
-      <article class="card">
-        <div class="tag">Pourquoi pas ici</div>
-        <h2>Traduire dans le navigateur.</h2>
-        <p>C’est possible plus tard : il faudrait exporter les poids du réseau et les faire calculer dans la page. Ils pèsent une quinzaine de mégaoctets.</p>
-        <p>Tant que le modèle confond encore des mots simples, le mettre en ligne ferait croire à une traduction. Le bon geste, maintenant, c’est d’ajouter des données, puis de réentraîner.</p>
-      </article>
-    </section>
-  </div>
+  <p class="aka">English · Français</p>
+  <h1>Ngiemboon</h1>
+  <p class="aka">guembon · ngienboum · Batcham, Bamboutos, Cameroon</p>
+
+  <h2>English</h2>
+  <p>A small program for <strong>French ↔ Ngiemboon</strong> and <strong>English ↔ Ngiemboon</strong>. English goes through French, because the network was trained on French–Ngiemboon sentences.</p>
+  <p>It is not reliable yet. Everyday sentences are missing. Check every result with a speaker. A tone changes the meaning: <span class="ng">má</span> is “mother”, <span class="ng">mà</span> is “robe”.</p>
+  <p>This page does not translate. Run the program on a computer:</p>
+  <pre>python -m nmt --from en "Good evening"
+python -m nmt --to en "má"
+python -m nmt "Bonsoir"</pre>
+  <p><a href="https://github.com/Dior278/nmt-francais-ngiemboon">Source code</a> · <a href="https://github.com/Dior278/nmt-francais-ngiemboon#english">How to run it</a></p>
+
+  <hr>
+
+  <h2>Français</h2>
+  <p>Un petit programme pour le <strong>français ↔ ngiemboon</strong> et l’<strong>anglais ↔ ngiemboon</strong>. L’anglais passe par le français, parce que le réseau a été entraîné sur des phrases français–ngiemboon.</p>
+  <p>Ce n’est pas encore fiable. Il manque des phrases de tous les jours. Une sortie se relit avec un locuteur. Un ton change le sens : <span class="ng">má</span> veut dire « mère », <span class="ng">mà</span> veut dire « boubou ».</p>
+  <p>Cette page ne traduit pas. Le programme se lance sur un ordinateur :</p>
+  <pre>python -m nmt "Bonsoir, comment ça va ?"
+python -m nmt --to fr "má"
+python -m nmt --from en "Good evening"</pre>
+  <p>Langue bamiléké des Grassfields, parlée à <strong>Batcham</strong> (Bamboutos, région de l’Ouest, Cameroun), aussi appelée guembon ou ngienboum. Écrite dans l’alphabet général des langues camerounaises.</p>
+  <p><a href="https://github.com/Dior278/nmt-francais-ngiemboon">Voir le code</a> · <a href="https://github.com/Dior278/nmt-francais-ngiemboon#français">Mode d’emploi</a></p>
 </body>
 </html>
