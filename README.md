@@ -45,36 +45,41 @@ Cela écrit `processed/pairs.jsonl` et `processed/stats.json`. Chaque ligne a le
 ## Entraîner
 
 ```powershell
-python -m nmt.train --device auto --no-resume
+python -m nmt train
 ```
 
-`--no-resume` part de zéro. Avec CUDA, le script prend le profil GPU : 4 couches, `d_model=256`, vocabulaire ~8000, `max_len=160`, label smoothing, warmup, précision mixte, et une copie NG **sans tons** pour le sens ngiemboon → français.
+Sans CUDA, le profil est celui de cette machine : **3 couches**, `d_model=192`, 6 têtes, vocabulaire ~5000, dropout 0.1, copie des phrases ngiemboon **sans tons**, et l’ordonnance de pas Noam (montée puis `1/√t`). Les embeddings d’entrée et de sortie sont liés. C’est volontairement compact : avec environ 8 000 paires, un réseau plus large mémorise le Nouveau Testament au lieu de généraliser.
 
-Si CUDA manque de mémoire : `python -m nmt.train --device auto --no-resume --batch-size 16`.
+L’entraînement s’arrête si la validation ne progresse plus (`patience`). Le meilleur point est écrit dans `checkpoints/fr_ngiemboon.pt`, le tokenizer dans `processed/tokenizer.json`. Relancer la même commande continue à l’epoch suivant et garde l’ordonnance de pas : `fr_ngiemboon.pt` est mis à jour quand la validation s’améliore. `--no-resume` repart de zéro.
 
-Les poids vont dans `checkpoints/fr_ngiemboon.pt`, le tokenizer dans `processed/tokenizer.json`.
+Avec un GPU, le même script passe au profil plus large (4 couches, `d_model=256`, dropout 0.2, lissage d’étiquettes 0.1) et à la précision mixte. Si CUDA manque de mémoire : `python -m nmt train --batch-size 16`.
 
 ## Traduire
 
-```powershell
-python -m nmt.app
-```
-
-Français → ngiemboon, ngiemboon → français, clavier AGLC (ŋ ɛ ɔ ʉ ẅ ÿ et tons), exemples du corpus. L’interface n’entraîne pas. Sans checkpoint, elle affiche la commande d’entraînement.
-
-En ligne de commande :
+Une phrase :
 
 ```powershell
-python -m nmt.translate --dir fr2ng "Bonsoir, comment ça va ?"
+python -m nmt "Bonsoir, comment ça va ?"
 ```
 
-Sens inverse. `má`, avec le ton haut, veut dire « mère ». Ce n’est pas la traduction de la phrase du dessus.
+Sans argument, une boucle attend les phrases (`/fr` et `/ng` changent de sens, `/q` quitte) :
 
 ```powershell
-python -m nmt.translate --dir ng2fr "má"
+python -m nmt
+python -m nmt --vers fr "má"
 ```
 
-Sans tons à l’entrée ngiemboon, le programme normalise et prévient : l’ambiguïté reste.
+`má`, avec le ton haut, veut dire « mère ». Ce n’est pas la traduction de la phrase française au-dessus.
+
+Côté ngiemboon, l’AGLC (Anderson 2007) traite le ton comme un signe à part, le même sur toutes les voyelles : ´ haut, ` bas, ˇ montant, ˆ descendant. `á` et `ɛ́` portent donc le même ton haut. ŋ ɛ ɔ ʉ restent des lettres, et le tréma de ẅ et ÿ n’est pas un ton. Côté français, é è ê à restent des lettres. Sans aucun ton en entrée ngiemboon, ou si la sortie ngiemboon n’en a pas, le programme prévient.
+
+Fenêtre, avec clavier AGLC (ŋ ɛ ɔ ʉ ẅ ÿ et tons) :
+
+```powershell
+python -m nmt app
+```
+
+Ctrl+Entrée lance la traduction. Sans tons à l’entrée ngiemboon, le programme prévient : l’ambiguïté reste. Les sorties sont à relire avec un locuteur.
 
 ## Ce que le pipeline extrait
 
@@ -98,7 +103,7 @@ Une ligne JSON par paire, même format que `processed/pairs.jsonl` :
 {"id": "MOI.1", "book": "MOI", "ref": "phrase 1", "fr": "On se retrouve demain au marché.", "ng": "..."}
 ```
 
-Puis : `python -m nmt.train --rebuild-corpus`.
+Puis : `python -m nmt train --rebuild-corpus`.
 
 ## Droits
 

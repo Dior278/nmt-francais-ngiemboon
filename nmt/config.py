@@ -1,4 +1,9 @@
-"""Training size follows the machine: GPU if present, otherwise a small CPU profile."""
+"""Training size follows the machine.
+
+About 8 000 parallel sentences is a low-resource setting. A compact
+pre-norm Transformer generalizes better here than a deep network, and it
+still finishes in a few hours on CPU.
+"""
 
 from __future__ import annotations
 
@@ -7,24 +12,28 @@ import argparse
 import torch
 
 
+# This laptop is CPU-only. 3 layers / d_model 192 is the size that can
+# actually learn ~8 000 pairs without spending the whole run memorizing them.
 CPU_PROFILE = {
-    "d_model": 128,
-    "num_heads": 4,
-    "num_layers": 2,
-    "d_ff": 256,
-    "dropout": 0.15,
-    "max_len": 96,
-    "vocab_size": 4000,
-    "batch_size": 16,
-    "epochs": 8,
-    "lr": 3e-4,
+    "d_model": 192,
+    "num_heads": 6,
+    "num_layers": 3,
+    "d_ff": 768,
+    "dropout": 0.1,
+    "max_len": 160,
+    "vocab_size": 5000,
+    "batch_size": 64,
+    "epochs": 12,
+    "lr_factor": 1.0,
     "amp": False,
     "num_workers": 0,
     "label_smoothing": 0.0,
-    "warmup_steps": 0,
+    "warmup_steps": 400,
     "weight_decay": 0.0,
-    "tone_augment": False,
-    "use_domain_tags": False,
+    "tone_augment": True,
+    "use_domain_tags": True,
+    "patience": 6,
+    "beam_size": 4,
 }
 
 # Friend's GPU: a bit deeper, longer health sentences, label smoothing,
@@ -40,14 +49,16 @@ GPU_PROFILE = {
     "vocab_size": 8000,
     "batch_size": 48,
     "epochs": 50,
-    "lr": 4e-4,
+    "lr_factor": 0.5,
     "amp": True,
     "num_workers": 2,
     "label_smoothing": 0.1,
-    "warmup_steps": 400,
+    "warmup_steps": 2000,
     "weight_decay": 0.01,
     "tone_augment": True,
     "use_domain_tags": True,
+    "patience": 8,
+    "beam_size": 4,
 }
 
 
@@ -71,5 +82,5 @@ def parse_train_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--epochs", type=int, default=None)
     p.add_argument("--batch-size", type=int, default=None)
     p.add_argument("--rebuild-corpus", action="store_true", help="Re-extract PDFs and retrain BPE.")
-    p.add_argument("--no-resume", action="store_true", help="Ignore an existing checkpoint.")
+    p.add_argument("--no-resume", action="store_true", help="Ignore an existing checkpoint and train from scratch.")
     return p.parse_args(argv)

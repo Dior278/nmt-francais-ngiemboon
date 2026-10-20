@@ -13,8 +13,26 @@ import re
 import unicodedata
 
 # Letters the AGLC / Anderson 2007 orthography actually uses.
-AGLC_LETTERS = "ŋŊɛƐɔƆʉɄẅẄÿŶʼ'"
+# ẅ ÿ are letters (diaeresis), not tones. Capital ÿ is Ÿ.
+AGLC_LETTERS = "ŋŊɛƐɔƆʉɄẅẄÿŸʼ'"
+# Anderson: low `, high ´, falling ˆ, rising ˇ, plus mid ¯ and extra-low ̏.
 TONE_COMBINING = "\u0300\u0301\u0302\u030c\u0304\u030f"  # ̀ ́ ̂ ̌ ̄ ̏
+# Keyboards often emit a spacing accent after the vowel. Same tones, AGLC form.
+_SPACING_TONE = {
+    "\u0060": "\u0300",  # `
+    "\u02cb": "\u0300",  # ˋ
+    "\u00b4": "\u0301",  # ´
+    "\u02ca": "\u0301",  # ˊ
+    "\u02c6": "\u0302",  # ˆ
+    "\u02c7": "\u030c",  # ˇ
+    "\u00af": "\u0304",  # ¯
+    "\u02c9": "\u0304",  # ˉ
+}
+_NG_APOSTROPHE = str.maketrans({
+    "\u0027": "\u02bc",  # ' → ʼ
+    "\u2019": "\u02bc",  # ’ → ʼ
+    "\u2018": "\u02bc",  # ‘ → ʼ
+})
 
 # CID leftovers in Timene 2024 → AGLC. Combining marks attach to the
 # previous vowel (they appear *after* it in the PDF stream).
@@ -73,7 +91,13 @@ PAIR_FIELDS = ("id", "book", "ref", "fr", "ng")
 
 def make_pair(id_: str, book: str, ref: str, fr: str, ng: str) -> dict:
     """Every corpus line uses the Bible columns only."""
-    return {"id": id_, "book": book, "ref": ref, "fr": fr, "ng": ng}
+    return {
+        "id": id_,
+        "book": book,
+        "ref": ref,
+        "fr": normalize_fr(fr),
+        "ng": normalize_ng(ng),
+    }
 
 
 def domain_of(row: dict) -> str:
@@ -94,11 +118,65 @@ def only_pair_fields(row: dict) -> dict:
 
 FR_LIKE = re.compile(r"[A-Za-zÀ-ÿ]")
 NG_LIKE = re.compile(r"[A-Za-zÀ-ÿŋɛɔʉẅÿŊƐƆ]")
-HAS_TONE = re.compile(r"[\u0300-\u036fáàâǎéèêěíìóòôǒúùńǹḿ]")
 
 
 def nfc(text: str) -> str:
     return unicodedata.normalize("NFC", text)
+
+
+def _attach_spacing_tones(text: str) -> str:
+    out: list[str] = []
+    for ch in text:
+        tone = _SPACING_TONE.get(ch)
+        if tone and out and unicodedata.category(out[-1])[0] == "L":
+            out.append(tone)
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def normalize_fr(text: str) -> str:
+    """French accents stay letters: é è ê à are not Ngiemboon tones."""
+    return nfc(text.strip())
+
+
+def normalize_ng(text: str) -> str:
+    """AGLC for Ngiemboon.
+
+    ŋ ɛ ɔ ʉ ẅ ÿ stay letters. A tone is always the same combining sign
+    after the vowel or the syllabic nasal, whether the source wrote á or
+    a + ´ or ɛ́. The diaeresis of ẅ and ÿ is not a tone. The apostrophe
+    of the orthography is ʼ.
+    """
+    text = _attach_spacing_tones(text.strip().translate(_NG_APOSTROPHE))
+    decomposed = unicodedata.normalize("NFD", text)
+    out: list[str] = []
+    index = 0
+    while index < len(decomposed):
+        char = decomposed[index]
+        index += 1
+        if unicodedata.category(char).startswith("M"):
+            out.append(char)
+            continue
+        tones: list[str] = []
+        others: list[str] = []
+        while index < len(decomposed) and unicodedata.category(decomposed[index]).startswith("M"):
+            mark = decomposed[index]
+            index += 1
+            if mark in TONE_COMBINING:
+                tones.append(mark)
+            else:
+                others.append(mark)
+        out.append(nfc(char + "".join(others)))
+        for tone in TONE_COMBINING:
+            if tone in tones:
+                out.append(tone)
+    return "".join(out)
+
+
+def present(text: str, lang: str) -> str:
+    """Show Ngiemboon in AGLC and French with its own accents."""
+    return normalize_ng(text) if lang == "ng" else normalize_fr(text)
 
 
 def repair_timene_pua(text: str) -> str:
@@ -136,20 +214,19 @@ def clean_gloss(text: str) -> str:
 
 
 def strip_tones(text: str) -> str:
-    """Remove combining tones and decompose precomposed letters.
+    """Remove tone marks only. ŋ ɛ ɔ ʉ ẅ ÿ stay: the diaeresis is not a tone.
 
-    ŋ ɛ ɔ ʉ ẅ ÿ stay. Used for tone-tolerant NG→FR input and optional
-    training augmentation. Ambiguity remains (má ≠ mà).
+    Used for tone-tolerant NG→FR input and training augmentation.
+    Ambiguity remains (má ≠ mà).
     """
     decomposed = unicodedata.normalize("NFD", text)
-    stripped = "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
+    stripped = "".join(ch for ch in decomposed if ch not in TONE_COMBINING)
     return nfc(stripped)
 
 
 def has_tone_marks(text: str) -> bool:
-    if HAS_TONE.search(text):
-        return True
-    return any(unicodedata.category(ch) == "Mn" for ch in unicodedata.normalize("NFD", text))
+    decomposed = unicodedata.normalize("NFD", text)
+    return any(ch in TONE_COMBINING for ch in decomposed)
 
 
 def looks_like_french(text: str) -> bool:

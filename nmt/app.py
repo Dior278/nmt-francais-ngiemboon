@@ -20,8 +20,8 @@ except ImportError as exc:  # pragma: no cover
         "customtkinter manque. Dans Transformer/ :  pip install -r nmt/requirements.txt"
     ) from exc
 
-from .decode import prepare_source, translate_pair
-from .normalize import domain_of, has_tone_marks
+from .decode import prepare_source, tone_notes, translate_pair
+from .normalize import domain_of, normalize_fr, normalize_ng
 
 AGLC_LETTERS = [
     ("ŋ", "ŋ"),
@@ -33,7 +33,9 @@ AGLC_LETTERS = [
     ("ʉ", "ʉ"),
     ("Ʉ", "Ʉ"),
     ("ẅ", "ẅ"),
+    ("Ẅ", "Ẅ"),
     ("ÿ", "ÿ"),
+    ("Ÿ", "Ÿ"),
     ("ʼ", "ʼ"),
 ]
 TONE_MARKS = [
@@ -46,8 +48,13 @@ FALLBACK_EXAMPLES = [
     ("fr2ng", "Bonsoir, comment ça va ?", ""),
     ("fr2ng", "Le cancer du col de l’utérus.", ""),
     ("ng2fr", "má", "ton haut : mère"),
-    ("ng2fr", "má", "avec le ton haut : mère"),
+    ("ng2fr", "mà", "ton bas : boubou"),
 ]
+
+
+def _example_label(index: int, direction: str, src: str) -> str:
+    arrow = "fr → ng" if direction == "fr2ng" else "ng → fr"
+    return f"{index + 1}. {arrow}  {src[:48]}"
 
 
 def _load_examples() -> list[tuple[str, str, str]]:
@@ -60,7 +67,7 @@ def _load_examples() -> list[tuple[str, str, str]]:
             continue
         row = json.loads(line)
         kind = domain_of(row)
-        item = (kind, row["fr"], row["ng"])
+        item = (kind, normalize_fr(row["fr"]), normalize_ng(row["ng"]))
         if kind == "health" and len(health) < 4:
             health.append(item)
         elif kind == "bible" and len(bible) < 3:
@@ -135,6 +142,7 @@ class TranslatorApp(ctk.CTk):
 
         self.src = ctk.CTkTextbox(body, height=180, font=ctk.CTkFont(size=16), wrap="word")
         self.src.grid(row=1, column=0, sticky="nsew", padx=(0, 8), pady=4)
+        self.src.bind("<Control-Return>", self._on_ctrl_enter)
         self.out = ctk.CTkTextbox(body, height=180, font=ctk.CTkFont(size=16), wrap="word")
         self.out.grid(row=1, column=1, sticky="nsew", padx=(8, 0), pady=4)
         self.out.configure(state="disabled")
@@ -155,7 +163,7 @@ class TranslatorApp(ctk.CTk):
             ).pack(side="left", padx=2, pady=2)
         row2 = ctk.CTkFrame(self.palette, fg_color="transparent")
         row2.pack(fill="x", padx=10, pady=(0, 8))
-        ctk.CTkLabel(row2, text="Tons (après la voyelle) :", font=ctk.CTkFont(size=12)).pack(
+        ctk.CTkLabel(row2, text="Tons AGLC, après la voyelle :", font=ctk.CTkFont(size=12)).pack(
             side="left", padx=(4, 8)
         )
         for label, ch in TONE_MARKS:
@@ -167,7 +175,7 @@ class TranslatorApp(ctk.CTk):
         actions.pack(fill="x", padx=16, pady=8)
         ctk.CTkButton(
             actions,
-            text="Traduire",
+            text="Traduire    Ctrl+Entrée",
             height=42,
             font=ctk.CTkFont(size=16, weight="bold"),
             command=self._translate,
@@ -175,7 +183,7 @@ class TranslatorApp(ctk.CTk):
         ctk.CTkButton(actions, text="Effacer", height=42, width=110, command=self._clear).pack(
             side="left", padx=8
         )
-        ex_values = [f"{d} · {src[:56]}" for d, src, _ in self.examples]
+        ex_values = [_example_label(i, d, src) for i, (d, src, _) in enumerate(self.examples)]
         self.ex_menu = ctk.CTkOptionMenu(
             actions, values=ex_values or ["(pas d’exemples)"], command=self._use_example, width=360
         )
@@ -202,6 +210,10 @@ class TranslatorApp(ctk.CTk):
             self.dir_label.configure(text="Ngiemboon  →  Français")
             self.src_title.configure(text="Ngiemboon")
             self.tgt_title.configure(text="Français")
+
+    def _on_ctrl_enter(self, _event):
+        self._translate()
+        return "break"
 
     def _insert(self, char: str) -> None:
         self.src.insert("insert", char)
@@ -243,9 +255,8 @@ class TranslatorApp(ctk.CTk):
         self.status.set("Traduction copiée.")
 
     def _use_example(self, choice: str) -> None:
-        for direction, src, _tgt in self.examples:
-            label = f"{direction} · {src[:56]}"
-            if label == choice:
+        for index, (direction, src, _tgt) in enumerate(self.examples):
+            if _example_label(index, direction, src) == choice:
                 self.direction.set(direction)
                 self._sync_direction_ui()
                 self.src.delete("1.0", "end")
@@ -258,11 +269,8 @@ class TranslatorApp(ctk.CTk):
         tok = PROCESSED_DIR / "tokenizer.json"
         if not ckpt.exists() or not tok.exists():
             self.status.set(
-                "Aucun modèle entraîné sur cette machine. "
-                "Sur l’ordinateur avec GPU, depuis le dossier Transformer :  "
-                "python -m nmt.train --device auto --no-resume    "
-                "Puis recopiez checkpoints/fr_ngiemboon.pt et processed/tokenizer.json. "
-                "L’interface n’lance pas l’entraînement (pas de GPU ici)."
+                "Aucun modèle pour l’instant. Depuis ce dossier :  python -m nmt train    "
+                "Puis relancez  python -m nmt app."
             )
             return
         try:
@@ -282,25 +290,24 @@ class TranslatorApp(ctk.CTk):
             self.status.set("Écrivez une phrase à gauche.")
             return
         if self.model is None:
-            self.status.set(
-                "Pas de checkpoint. Entraînez d’abord sur GPU :  python -m nmt.train --device auto --no-resume"
-            )
+            self.status.set("Pas de modèle. Entraînez d’abord :  python -m nmt train")
             return
         direction = self.direction.get()
         prepared, tone_missing = prepare_source(text, direction)
-        note = ""
-        if direction == "ng2fr" and (tone_missing or not has_tone_marks(text)):
-            note = (
-                "Aucun ton dans la saisie : le français proposé est une approximation. "
-                "má ≠ mà. Utilisez le clavier AGLC."
-            )
+        target = "ng" if direction == "fr2ng" else "fr"
+        notes: list[str] = []
+        if len(self.tokenizer.encode(prepared, lang_tag=target)) > self.model.max_positions():
+            notes.append("Phrase trop longue : la fin n'est pas lue.")
+        self.status.set("Traduction…")
+        self.update_idletasks()
         try:
             result = translate_pair(self.model, self.tokenizer, prepared, direction, self.device)
         except Exception as exc:
             self.status.set(f"Erreur : {exc}")
             return
+        notes.extend(tone_notes(direction, tone_missing, result, keyboard=True))
         self._set_out(result)
-        self.status.set(note or "Traduction brouillon — à relire avec un locuteur de Batcham.")
+        self.status.set(" ".join(notes) or "Traduction brouillon — à relire avec un locuteur de Batcham.")
 
 
 def main() -> None:

@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .decode import prepare_source, translate_pair
+from .decode import prepare_source, tone_notes, translate_pair
 from .train import load_model
 
 
@@ -25,13 +25,10 @@ def main(argv: list[str] | None = None) -> None:
         raise SystemExit("Empty input.")
     model, tokenizer, device = load_model()
     prepared, tone_missing = prepare_source(text, args.dir)
-    if tone_missing:
-        print(
-            "Note: aucun ton détecté. Sans tons le ngiemboon est ambigu "
-            "(má « mère » ≠ mà « boubou »). Le modèle tente quand même.",
-            file=sys.stderr,
-        )
-    print(translate_pair(model, tokenizer, prepared, args.dir, device))
+    result = translate_pair(model, tokenizer, prepared, args.dir, device)
+    for note in tone_notes(args.dir, tone_missing, result):
+        print("Note : " + note, file=sys.stderr)
+    print(result)
 
 
 if __name__ == "__main__":

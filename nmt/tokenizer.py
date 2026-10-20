@@ -1,11 +1,19 @@
-"""Joint BPE tokenizer. AGLC letters and tone marks stay atomic."""
+"""Joint BPE tokenizer.
+
+AGLC letters stay atomic. Ngiemboon tone marks stay their own symbols:
+they are not merged into the vowel, so á and ɛ́ share the high-tone sign.
+French é è ê stay whole letters.
+"""
 
 from __future__ import annotations
 
+import heapq
 import json
 import re
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
+
+from .normalize import TONE_COMBINING
 
 SPECIAL = [
     "<pad>",
@@ -20,6 +28,14 @@ SPECIAL = [
     "<grammar>",
 ]
 TOKEN_RE = re.compile(r"\S+")
+
+
+def _holds_tone(piece: str) -> bool:
+    return any(ch in TONE_COMBINING for ch in piece)
+
+
+def _mergable(left: str, right: str) -> bool:
+    return not _holds_tone(left) and not _holds_tone(right)
 
 
 class BPETokenizer:
@@ -57,7 +73,11 @@ class BPETokenizer:
         chars = list(word) + ["</w>"]
         while len(chars) >= 2:
             pairs = [(chars[i], chars[i + 1]) for i in range(len(chars) - 1)]
-            ranked = [(self.merge_ranks[p], i) for i, p in enumerate(pairs) if p in self.merge_ranks]
+            ranked = [
+                (self.merge_ranks[p], i)
+                for i, p in enumerate(pairs)
+                if p in self.merge_ranks and _mergable(*p)
+            ]
             if not ranked:
                 break
             _, idx = min(ranked)
@@ -106,6 +126,19 @@ class BPETokenizer:
         return cls(payload["vocab"], merges)
 
 
+def _apply_merge(pieces: list[str], left: str, right: str, merged: str) -> list[str]:
+    out: list[str] = []
+    i = 0
+    while i < len(pieces):
+        if i < len(pieces) - 1 and pieces[i] == left and pieces[i + 1] == right:
+            out.append(merged)
+            i += 2
+        else:
+            out.append(pieces[i])
+            i += 1
+    return out
+
+
 def train_bpe(texts: list[str], vocab_size: int = 4000, min_freq: int = 3) -> BPETokenizer:
     freqs: Counter[str] = Counter()
     for text in texts:
@@ -117,37 +150,63 @@ def train_bpe(texts: list[str], vocab_size: int = 4000, min_freq: int = 3) -> BP
     vocab_tokens = set(SPECIAL) | alphabet
     target_merges = max(0, vocab_size - len(vocab_tokens))
 
+    pair_counts: Counter[tuple[str, str]] = Counter()
+    pair_words: dict[tuple[str, str], set[str]] = defaultdict(set)
+    for word, pieces in splits.items():
+        weight = freqs[word]
+        for pair in zip(pieces, pieces[1:]):
+            if not _mergable(*pair):
+                continue
+            pair_counts[pair] += weight
+            pair_words[pair].add(word)
+    heap = [(-freq, pair) for pair, freq in pair_counts.items()]
+    heapq.heapify(heap)
+
     print(f"BPE: {len(freqs)} word types, {len(alphabet)} chars, up to {target_merges} merges", flush=True)
 
-    for step in range(target_merges):
-        pair_counts: Counter[tuple[str, str]] = Counter()
-        for word, pieces in splits.items():
-            if len(pieces) < 2:
-                continue
-            w = freqs[word]
-            for a, b in zip(pieces, pieces[1:]):
-                pair_counts[(a, b)] += w
-        if not pair_counts:
-            break
-        best, freq = pair_counts.most_common(1)[0]
-        if freq < min_freq:
+    while len(merges) < target_merges:
+        best: tuple[str, str] | None = None
+        freq = 0
+        while heap:
+            neg, pair = heapq.heappop(heap)
+            current = pair_counts.get(pair, 0)
+            if current == -neg and current >= min_freq and _mergable(*pair):
+                best, freq = pair, current
+                break
+        if best is None:
             break
         merges.append(best)
-        new = best[0] + best[1]
-        vocab_tokens.add(new)
-        for word, pieces in splits.items():
-            i = 0
-            merged: list[str] = []
-            while i < len(pieces):
-                if i < len(pieces) - 1 and pieces[i] == best[0] and pieces[i + 1] == best[1]:
-                    merged.append(new)
-                    i += 2
-                else:
-                    merged.append(pieces[i])
-                    i += 1
-            splits[word] = merged
-        if (step + 1) % 250 == 0:
-            print(f"  merge {step + 1}/{target_merges}  pair={best!r}  freq={freq}", flush=True)
+        symbol = best[0] + best[1]
+        vocab_tokens.add(symbol)
+        changed: set[tuple[str, str]] = set()
+        for word in list(pair_words.get(best, ())):
+            pieces = splits[word]
+            weight = freqs[word]
+            old_pairs = {pair for pair in zip(pieces, pieces[1:]) if _mergable(*pair)}
+            for pair in zip(pieces, pieces[1:]):
+                if not _mergable(*pair):
+                    continue
+                pair_counts[pair] -= weight
+                if pair_counts[pair] <= 0:
+                    del pair_counts[pair]
+            updated = _apply_merge(pieces, best[0], best[1], symbol)
+            splits[word] = updated
+            new_pairs = {pair for pair in zip(updated, updated[1:]) if _mergable(*pair)}
+            for pair in zip(updated, updated[1:]):
+                if not _mergable(*pair):
+                    continue
+                pair_counts[pair] += weight
+            for pair in old_pairs - new_pairs:
+                pair_words[pair].discard(word)
+            for pair in new_pairs - old_pairs:
+                pair_words[pair].add(word)
+            changed |= old_pairs | new_pairs
+        for pair in changed:
+            current = pair_counts.get(pair, 0)
+            if current >= min_freq:
+                heapq.heappush(heap, (-current, pair))
+        if len(merges) % 250 == 0:
+            print(f"  merge {len(merges)}/{target_merges}  pair={best!r}  freq={freq}", flush=True)
 
     vocab = {tok: i for i, tok in enumerate(SPECIAL)}
     for tok in sorted(t for t in vocab_tokens if t not in vocab):

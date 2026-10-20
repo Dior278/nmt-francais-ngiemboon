@@ -27,6 +27,17 @@ def _bucket(row: dict) -> str:
     return "bible"
 
 
+def _cache_includes_adapted() -> bool:
+    stats_path = PROCESSED_DIR / "stats.json"
+    if not stats_path.exists():
+        return False
+    try:
+        stats = json.loads(stats_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return False
+    return bool(stats.get("include_adapted_ortho"))
+
+
 def _load_cached_pairs(include_adapted_ortho: bool) -> list[dict] | None:
     cache_path = PROCESSED_DIR / "pairs.jsonl"
     if not cache_path.exists():
@@ -36,16 +47,24 @@ def _load_cached_pairs(include_adapted_ortho: bool) -> list[dict] | None:
         for line in cache_path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+    if include_adapted_ortho and not _cache_includes_adapted():
+        if not any(_bucket(row) == "ndiola" for row in rows):
+            return None
     if not include_adapted_ortho:
         rows = [row for row in rows if _bucket(row) != "ndiola"]
     return rows
 
 
-def _write_corpus(unique: list[dict], lexicon: list[dict] | None = None) -> None:
+def _write_corpus(
+    unique: list[dict],
+    lexicon: list[dict] | None = None,
+    include_adapted_ortho: bool = False,
+) -> None:
     stats = {
         "total": len(unique),
         "by_book_group": dict(Counter(_bucket(p) for p in unique)),
         "columns": list(PAIR_FIELDS),
+        "include_adapted_ortho": include_adapted_ortho,
         "note": (
             "Ndiola (id prefix NDIOLA. / book NDIOLA) is excluded unless "
             "--include-adapted-ortho. Wrong tones change meaning; do not mix "
@@ -86,7 +105,7 @@ def build_all(force: bool = False, include_adapted_ortho: bool = False) -> list[
         seen.add(key)
         unique.append({field: row[field] for field in PAIR_FIELDS})
 
-    _write_corpus(unique, lexicon)
+    _write_corpus(unique, lexicon, include_adapted_ortho=include_adapted_ortho)
     return unique
 
 
