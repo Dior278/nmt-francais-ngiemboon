@@ -65,11 +65,7 @@ def _write_corpus(
         "by_book_group": dict(Counter(_bucket(p) for p in unique)),
         "columns": list(PAIR_FIELDS),
         "include_adapted_ortho": include_adapted_ortho,
-        "note": (
-            "Ndiola (id prefix NDIOLA. / book NDIOLA) is excluded unless "
-            "--include-adapted-ortho. Wrong tones change meaning; do not mix "
-            "adapted spelling into AGLC training."
-        ),
+        "note": "The syntax thesis is excluded unless --include-adapted-ortho.",
     }
     (PROCESSED_DIR / "stats.json").write_text(
         json.dumps(stats, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -128,7 +124,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--include-adapted-ortho",
         action="store_true",
-        help="Include Ndiola 2011 (book=NDIOLA). Off by default.",
+        help="Include the syntax thesis. Off by default.",
     )
     args = parser.parse_args()
     data = build_all(force=args.force, include_adapted_ortho=args.include_adapted_ortho)

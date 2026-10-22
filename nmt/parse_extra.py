@@ -1,8 +1,4 @@
-"""Extra sources: health voice-over, SIL lexicon, Lonfo grammar, Ndiola examples.
-
-Every written pair uses the Bible columns only: id, book, ref, fr, ng.
-Ndiola is excluded from default training by id prefix / book, not extra keys.
-"""
+"""Extra parallel texts besides the New Testament."""
 
 from __future__ import annotations
 

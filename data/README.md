@@ -1,24 +1,20 @@
-# Local sources
+# Sources
 
-This folder does **not** contain the PDFs. They stay on your machine, and they must not be committed: several texts are copyrighted.
+These files are not part of the repository. Place them in this folder, under these names, only with the right to use them. Do not add them to the repository.
 
-**Français.** Les PDF ne sont pas dans le dépôt. Pose ici les fichiers que tu as le droit d’utiliser, avec exactement les noms du tableau.
+**Français.** Ces fichiers ne font pas partie du dépôt. Les placer ici, sous ces noms, seulement avec le droit de les utiliser. Ne pas les ajouter au dépôt.
 
-Put the files you already have the right to use here, with exactly these names:
+| File | What it is |
+| --- | --- |
+| `Francais-Bible-Segond-1910-All-Bible.pdf` | French Segond 1910. Public domain. Only the New Testament is used. |
+| `Ngiemboon-Bible-New-Testasment.pdf` | Ngiemboon New Testament, 2007. Under copyright. |
+| `Timene-2024-voiceover-sante-fr-ngiemboon.pdf` | Health dialogues, French and Ngiemboon. Under copyright. |
+| `precisdOrthographepourlaLangueNgiemboom.pdf` | Orthography sketch, 2007. Under copyright. |
+| `Lonfo-apercu-grammatical-ngiemboon.pdf` | Grammar sketch. Under copyright. |
+| `MemoireNdiolaTsuata.pdf` | Not used for training. |
 
-| File | Role | Status |
-| --- | --- | --- |
-| `Francais-Bible-Segond-1910-All-Bible.pdf` | French, Segond 1910 (whole Bible; only the New Testament is aligned) | Public domain |
-| `Ngiemboon-Bible-New-Testasment.pdf` | Ngiemboon New Testament, Bible Society of Cameroon, 2007 | Copyright |
-| `Timene-2024-voiceover-sante-fr-ngiemboon.pdf` | Health voice-over, French / Ngiemboon turns | Authors’ rights |
-| `precisdOrthographepourlaLangueNgiemboom.pdf` | Anderson orthography sketch, SIL, 2007 | Copyright |
-| `Lonfo-apercu-grammatical-ngiemboon.pdf` | Grammar sketch | Author’s rights |
-| `MemoireNdiolaTsuata.pdf` | Syntax thesis, 2011 | Author’s rights; **left out** of default training |
-
-Then, from the project root:
+From the project root:
 
 ```powershell
 python -m nmt.corpus --force
 ```
-
-That writes `processed/pairs.jsonl`, which is not versioned either: it is an extraction of the texts above, not a republication.

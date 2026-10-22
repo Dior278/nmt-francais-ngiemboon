@@ -1,9 +1,4 @@
-"""Training size follows the machine.
-
-About 8 000 parallel sentences is a low-resource setting. A compact
-pre-norm Transformer generalizes better here than a deep network, and it
-still finishes in a few hours on CPU.
-"""
+"""Training size follows the machine: a smaller network on CPU, a wider one on GPU."""
 
 from __future__ import annotations
 
@@ -12,8 +7,7 @@ import argparse
 import torch
 
 
-# This laptop is CPU-only. 3 layers / d_model 192 is the size that can
-# actually learn ~8 000 pairs without spending the whole run memorizing them.
+# CPU.
 CPU_PROFILE = {
     "d_model": 192,
     "num_heads": 6,
@@ -36,9 +30,7 @@ CPU_PROFILE = {
     "beam_size": 4,
 }
 
-# Friend's GPU: a bit deeper, longer health sentences, label smoothing,
-# warmup, and a tone-stripped NG→FR copy so typed-without-tones input
-# degrades instead of collapsing.
+# GPU.
 GPU_PROFILE = {
     "d_model": 256,
     "num_heads": 8,
