@@ -2,13 +2,13 @@
 
 **Français.** Traduction automatique entre le français, l’anglais et le ngiemboon (aussi écrit *ngienboum*, *guembon*), langue bamiléké parlée à Batcham (Bamboutos, Ouest, Cameroun). Le mode d’emploi en français est dans la section [Français](#français). L’anglais passe par le français.
 
+**Français.** Si la préservation du ngiemboon vous intéresse, ou si vous avez des phrases, des dialogues ou d’autres données qui pourraient entrer dans l’entraînement du modèle, [Me contacter](https://www.linkedin.com/in/pavel-wadoh-tchinda-b9357a328).
+
 **English.** A small Transformer for French ↔ Ngiemboon, plus English ↔ Ngiemboon through French. Ngiemboon is a Grassfields language spoken in Batcham (Bamboutos, West Region, Cameroon) and written in the General Alphabet of Cameroon Languages. The code builds a parallel corpus, trains, and translates. Source PDFs and the extracted sentence pairs are **not** in this repository: several texts are copyrighted and are not redistributed here.
 
 The aim is a tool for **keeping the language in use**, and a base other people can pick up. The New Testament gives quantity. The health voice-over and the SIL lexicon give everyday language. More pairs (stories, dialogue, messages) make the model useful outside church language.
 
 This is **not** a production translator. Even with the Bible, health text, and lexicon, a speaker should check the output. A wrong tone changes the meaning (`má` “mother” ≠ `mà` “robe”, Anderson 2007).
-
-**Français.** Si la préservation du ngiemboon vous intéresse, ou si vous avez des phrases, des dialogues ou d’autres données qui pourraient entrer dans l’entraînement du modèle, [Me contacter](https://www.linkedin.com/in/pavel-wadoh-tchinda-b9357a328).
 
 **English.** If you care about keeping Ngiemboon in use, or if you have sentences, dialogue, or other data that could be used to train the model, [Contact me](https://www.linkedin.com/in/pavel-wadoh-tchinda-b9357a328).
 
