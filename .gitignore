@@ -23,6 +23,8 @@ checkpoints/
 *.pt
 *.pth
 *.onnx
+!docs/model/*.onnx
+!docs/model/tokenizer.json
 
 # OS / éditeur
 .DS_Store

@@ -24,24 +24,19 @@ With a GPU, install PyTorch for CUDA from [pytorch.org](https://pytorch.org) bef
 
 ### Translate
 
+On the [public page](https://dior278.github.io/nmt-francais-ngiemboon/), type a sentence. The model runs in the browser.
+
+On a computer:
+
 ```powershell
 python -m nmt "Bonsoir, comment ça va ?"
 python -m nmt --from en "Good evening, how are you?"
 python -m nmt --to en "má"
 python -m nmt --to fr "má"
-```
-
-`má` means “mother”. It is not the translation of the French sentence above.
-
-A window:
-
-```powershell
 python -m nmt app
 ```
 
-Ctrl+Enter translates. **Français / English** switches the interface language.
-
-The first English sentence downloads a French–English model.
+`má` means “mother”. It is not the translation of the French sentence above.
 
 ### Train
 
@@ -72,7 +67,9 @@ python -m nmt.corpus --force
 python -m nmt train
 ```
 
-Traduire :
+Sur la [page publique](https://dior278.github.io/nmt-francais-ngiemboon/), écrire une phrase. Le modèle tourne dans le navigateur.
+
+Sur un ordinateur :
 
 ```powershell
 python -m nmt "Bonsoir, comment ça va ?"
@@ -82,4 +79,4 @@ python -m nmt --to en "má"
 python -m nmt app
 ```
 
-L’anglais passe par le français. Ctrl+Entrée traduit dans la fenêtre.
+L’anglais passe par le français.

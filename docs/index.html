@@ -20,21 +20,49 @@
       font-size: 1.05rem;
       line-height: 1.5;
     }
-    h1, h2, .ng { font-family: "Gentium Plus", Palatino, serif; }
+    h1, h2, .ng, #out { font-family: "Gentium Plus", Palatino, serif; }
     h1 { font-size: 2.6rem; line-height: 1; margin: 0.2rem 0; }
     h2 { font-size: 1.45rem; margin: 1.6rem 0 0.4rem; }
     p { margin: 0.55rem 0; }
     .aka { margin: 0; color: #444; }
-    pre {
-      background: #f4f1ea;
-      padding: 0.8rem 1rem;
-      overflow-x: auto;
-      font-family: ui-monospace, Consolas, monospace;
-      font-size: 0.92rem;
-      line-height: 1.45;
-    }
     a { color: #0b3d2e; }
     hr { border: 0; border-top: 1px solid #ddd; margin: 2rem 0 0.4rem; }
+    .box {
+      margin: 1.2rem 0 0.4rem;
+      padding: 1rem 1.05rem 1.1rem;
+      background: #f4f1ea;
+      border-radius: 0.55rem;
+    }
+    label { display: block; font-size: 0.92rem; margin: 0.55rem 0 0.25rem; }
+    select, textarea, button {
+      font: inherit;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    select, textarea {
+      border: 1px solid #c9c2b4;
+      border-radius: 0.35rem;
+      padding: 0.45rem 0.55rem;
+      background: #fff;
+    }
+    textarea { min-height: 4.5rem; resize: vertical; }
+    button {
+      margin-top: 0.7rem;
+      border: 0;
+      border-radius: 0.35rem;
+      padding: 0.55rem 0.8rem;
+      background: #0b3d2e;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.45; cursor: default; }
+    #out {
+      margin-top: 0.7rem;
+      min-height: 2.4rem;
+      white-space: pre-wrap;
+      font-size: 1.2rem;
+    }
+    #status, #note { color: #555; font-size: 0.92rem; }
   </style>
 </head>
 <body>
@@ -42,26 +70,122 @@
   <h1>Ngiemboon</h1>
   <p class="aka">guembon · ngienboum · Batcham, Bamboutos, Cameroon</p>
 
+  <div class="box">
+    <p id="status">Loading the model…</p>
+    <label for="dir" id="dir-label">Direction</label>
+    <select id="dir">
+      <option value="fr2ng">Français → ngiemboon</option>
+      <option value="en2ng">English → ngiemboon</option>
+      <option value="ng2fr">Ngiemboon → français</option>
+      <option value="ng2en">Ngiemboon → English</option>
+    </select>
+    <label for="src" id="src-label">Sentence</label>
+    <textarea id="src" placeholder="Bonsoir, comment ça va ?"></textarea>
+    <button id="go" type="button" disabled>Translate</button>
+    <p id="out" class="ng" aria-live="polite"></p>
+    <p id="note"></p>
+  </div>
+
   <h2>English</h2>
-  <p>A small program for <strong>French ↔ Ngiemboon</strong> and <strong>English ↔ Ngiemboon</strong>. English goes through French.</p>
+  <p>A small program for <strong>French ↔ Ngiemboon</strong> and <strong>English ↔ Ngiemboon</strong>. English goes through French. The model runs in this page.</p>
   <p>It is not reliable yet. Check every result with a speaker. A tone changes the meaning: <span class="ng">má</span> is “mother”, <span class="ng">mà</span> is “robe”.</p>
   <p>If you care about keeping Ngiemboon in use, or if you have sentences, dialogue, or other data that could be used to train the model, <a href="https://www.linkedin.com/in/pavel-wadoh-tchinda-b9357a328">Contact me</a>.</p>
-  <p>This page does not translate. Run the program on a computer:</p>
-  <pre>python -m nmt --from en "Good evening"
-python -m nmt --to en "má"
-python -m nmt "Bonsoir"</pre>
-  <p><a href="https://github.com/Dior278/nmt-francais-ngiemboon">Source code</a> · <a href="https://github.com/Dior278/nmt-francais-ngiemboon#english">How to run it</a></p>
+  <p><a href="https://github.com/Dior278/nmt-francais-ngiemboon">Source code</a></p>
 
   <hr>
 
   <h2>Français</h2>
-  <p>Un petit programme pour le <strong>français ↔ ngiemboon</strong> et l’<strong>anglais ↔ ngiemboon</strong>. L’anglais passe par le français.</p>
+  <p>Un petit programme pour le <strong>français ↔ ngiemboon</strong> et l’<strong>anglais ↔ ngiemboon</strong>. L’anglais passe par le français. Le modèle tourne dans cette page.</p>
   <p>Ce n’est pas encore fiable. Une sortie se relit avec un locuteur. Un ton change le sens : <span class="ng">má</span> veut dire « mère », <span class="ng">mà</span> veut dire « boubou ».</p>
   <p>Si la préservation du ngiemboon vous intéresse, ou si vous avez des phrases, des dialogues ou d’autres données qui pourraient entrer dans l’entraînement du modèle, <a href="https://www.linkedin.com/in/pavel-wadoh-tchinda-b9357a328">Me contacter</a>.</p>
-  <p>Cette page ne traduit pas. Le programme se lance sur un ordinateur :</p>
-  <pre>python -m nmt "Bonsoir, comment ça va ?"
-python -m nmt --to fr "má"
-python -m nmt --from en "Good evening"</pre>
-  <p><a href="https://github.com/Dior278/nmt-francais-ngiemboon">Voir le code</a> · <a href="https://github.com/Dior278/nmt-francais-ngiemboon#français">Mode d’emploi</a></p>
+  <p><a href="https://github.com/Dior278/nmt-francais-ngiemboon">Voir le code</a></p>
+
+  <script type="module">
+    import { loadModel, translate } from "./translate.js";
+
+    const status = document.getElementById("status");
+    const go = document.getElementById("go");
+    const src = document.getElementById("src");
+    const out = document.getElementById("out");
+    const note = document.getElementById("note");
+    const dir = document.getElementById("dir");
+
+    const copy = {
+      loading: {
+        en: "Loading the model (about 25 MB)…",
+        fr: "Chargement du modèle (environ 25 Mo)…",
+      },
+      ready: {
+        en: "Ready. The result is a draft: a speaker should check it.",
+        fr: "Prêt. Le résultat est une ébauche : un locuteur doit le relire.",
+      },
+      fail: {
+        en: "The model could not load.",
+        fr: "Le modèle n’a pas pu se charger.",
+      },
+      working: {
+        en: "Translating…",
+        fr: "Traduction…",
+      },
+      en2ng: {
+        en: "English goes through French first.",
+        fr: "L’anglais passe d’abord par le français.",
+      },
+      ng2en: {
+        en: "Ngiemboon goes through French first.",
+        fr: "Le ngiemboon passe d’abord par le français.",
+      },
+      err: {
+        en: "Translation failed.",
+        fr: "La traduction a échoué.",
+      },
+      button: { en: "Translate", fr: "Traduire" },
+      dir: { en: "Direction", fr: "Sens" },
+      sentence: { en: "Sentence", fr: "Phrase" },
+    };
+
+    function pageLang() {
+      return (navigator.language || "en").toLowerCase().startsWith("fr") ? "fr" : "en";
+    }
+
+    const lang = pageLang();
+    go.textContent = copy.button[lang];
+    document.getElementById("dir-label").textContent = copy.dir[lang];
+    document.getElementById("src-label").textContent = copy.sentence[lang];
+    status.textContent = copy.loading[lang];
+
+    loadModel((s) => {
+      if (s === "ready") {
+        status.textContent = copy.ready[lang];
+        go.disabled = false;
+      }
+    }).catch(() => {
+      status.textContent = copy.fail[lang];
+    });
+
+    async function run() {
+      go.disabled = true;
+      out.textContent = "";
+      note.textContent = copy.working[lang];
+      try {
+        const result = await translate(src.value, dir.value);
+        out.textContent = result.text;
+        note.textContent = result.notes
+          .map((n) => copy[n]?.[lang] || "")
+          .filter(Boolean)
+          .join(" ");
+      } catch (e) {
+        out.textContent = "";
+        note.textContent = copy.err[lang];
+      } finally {
+        go.disabled = false;
+      }
+    }
+
+    go.addEventListener("click", run);
+    src.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) run();
+    });
+  </script>
 </body>
 </html>
