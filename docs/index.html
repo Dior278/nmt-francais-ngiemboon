@@ -63,12 +63,28 @@
       font-size: 1.2rem;
     }
     #status, #note { color: #555; font-size: 0.92rem; }
+    .warn {
+      margin: 1.1rem 0 0;
+      padding: 0.85rem 1rem;
+      border-left: 0.35rem solid #b45309;
+      background: #fff7ed;
+      color: #7c2d12;
+    }
+    .warn strong { display: block; margin-bottom: 0.25rem; font-size: 1.05rem; }
+    .warn p { margin: 0.35rem 0 0; }
   </style>
 </head>
 <body>
   <p class="aka">English · Français</p>
   <h1>Ngiemboon</h1>
   <p class="aka">guembon · ngienboum · Batcham, Bamboutos, Cameroon</p>
+
+  <aside class="warn" role="alert">
+    <strong>Attention — le modèle ne fonctionne pas encore bien</strong>
+    <p>Il a été entraîné sur trop peu de données. Beaucoup de phrases manquent. Les sorties sont souvent fausses ou approximatives. Pour améliorer le modèle, il faut plus de paires français–ngiemboon (dialogues, textes du quotidien, etc.).</p>
+    <p><strong>Warning — the model does not work well yet</strong></p>
+    <p>It was trained on too little data. Many sentences are missing. Outputs are often wrong or rough. More French–Ngiemboon pairs are needed to improve it (everyday dialogue, texts, and so on).</p>
+  </aside>
 
   <div class="box">
     <p id="status">Loading the model…</p>
@@ -88,7 +104,7 @@
 
   <h2>English</h2>
   <p>A small program for <strong>French ↔ Ngiemboon</strong> and <strong>English ↔ Ngiemboon</strong>. English goes through French. The model runs in this page.</p>
-  <p>It is not reliable yet. Check every result with a speaker. A tone changes the meaning: <span class="ng">má</span> is “mother”, <span class="ng">mà</span> is “robe”.</p>
+  <p>Check every result with a speaker. A tone changes the meaning: <span class="ng">má</span> is “mother”, <span class="ng">mà</span> is “robe”.</p>
   <p>If you care about keeping Ngiemboon in use, or if you have sentences, dialogue, or other data that could be used to train the model, <a href="https://www.linkedin.com/in/pavel-wadoh-tchinda-b9357a328">Contact me</a>.</p>
   <p><a href="https://github.com/Dior278/nmt-francais-ngiemboon">Source code</a></p>
 
@@ -96,7 +112,7 @@
 
   <h2>Français</h2>
   <p>Un petit programme pour le <strong>français ↔ ngiemboon</strong> et l’<strong>anglais ↔ ngiemboon</strong>. L’anglais passe par le français. Le modèle tourne dans cette page.</p>
-  <p>Ce n’est pas encore fiable. Une sortie se relit avec un locuteur. Un ton change le sens : <span class="ng">má</span> veut dire « mère », <span class="ng">mà</span> veut dire « boubou ».</p>
+  <p>Une sortie se relit avec un locuteur. Un ton change le sens : <span class="ng">má</span> veut dire « mère », <span class="ng">mà</span> veut dire « boubou ».</p>
   <p>Si la préservation du ngiemboon vous intéresse, ou si vous avez des phrases, des dialogues ou d’autres données qui pourraient entrer dans l’entraînement du modèle, <a href="https://www.linkedin.com/in/pavel-wadoh-tchinda-b9357a328">Me contacter</a>.</p>
   <p><a href="https://github.com/Dior278/nmt-francais-ngiemboon">Voir le code</a></p>
 
